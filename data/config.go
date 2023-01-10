@@ -4,8 +4,14 @@ import (
 	"fmt"
 )
 
+
+type WordBag interface {
+	Size() int
+	Get(position int) string
+}
+
+
 type WordCollection map[string]WordList
-type WordList []string
 
 func (c *WordCollection) Contains(category string) bool {
 	_, exists := (*c)[category]
@@ -22,3 +28,33 @@ func (c *WordCollection) Get(category string, position int) (value string, err e
 	}
 	return (*c)[category][position], nil
 }
+
+
+// The most straightforward WordBag implementation
+type WordList []string
+func (wl *WordList) Size() int {
+	return len(*wl)
+}
+func (wl *WordList) Get(position int) string {
+	return (*wl)[position]
+}
+
+type Config map[string]ListRef
+
+type ListRef struct {
+	Comment string
+	Type refType
+	Refs []string
+	Unique bool
+	UniquePrefix bool
+}
+
+type refType string
+
+const (
+	Nested refType = "nested"
+	Cartesian = "cartesian"
+	Words = "words"
+	Phrases = "phrases"
+	Const = "const"
+)
