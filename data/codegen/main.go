@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/sio/coolname/data"
@@ -29,7 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 	if ref == data.UpstreamRef {
-		fmt.Printf("Upstream data up to date: branch %s at commit %s\n", target, ref)
+		fmt.Printf("Up to date with upstream: branch %s at commit %s\n", target, ref)
 		return
 	}
 	os.WriteFile("upstream.ref", []byte(ref), 0666)
@@ -45,6 +44,10 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+	}
+	err = convert()
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
@@ -79,9 +82,7 @@ func commit(head string) (hash string, err error) {
 // Fetch data files from upstream
 func fetch(filename string, commit string) (err error) {
 	url := strings.ReplaceAll(dataUrl, "$REF", commit) + filename
-	dest := filepath.Join("..", filename)
-
-	fmt.Printf("Fetching %s to %s\n", filename, dest)
+	fmt.Printf("Fetching %s\n", filename)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -92,7 +93,7 @@ func fetch(filename string, commit string) (err error) {
 		return fmt.Errorf("HTTP error: %s (%s)", resp.Status, url)
 	}
 
-	output, err := os.Create(dest)
+	output, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
