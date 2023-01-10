@@ -8,13 +8,15 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"path/filepath"
+	"io"
 
 	"github.com/sio/coolname/data"
 )
 
 const (
 	baseUrl = "https://github.com/alexanderlukanin13/coolname"
-	dataUrl = baseUrl + "raw/$REF/coolname/data/"
+	dataUrl = baseUrl + "/raw/$REF/coolname/data/"
 	gitUrl  = baseUrl + ".git"
 	refsUrl = gitUrl + "/info/refs?service=git-upload-pack" // smart HTTP protocol
 	target  = "master"
@@ -32,9 +34,17 @@ func main() {
 	}
 	os.WriteFile("upstream.ref", []byte(ref), 0666)
 
-	fetch(data.UpstreamConfig, ref)
-	for _, list := range data.UpstreamLists {
-		fetch(list+".txt", ref)
+	var file string
+	for i := -1; i < len(data.UpstreamLists); i++ {
+		if i < 0 {
+			file = data.UpstreamConfig
+		} else {
+			file = data.UpstreamLists[i] + ".txt"
+		}
+		err = fetch(file, ref)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
@@ -67,7 +77,30 @@ func commit(head string) (hash string, err error) {
 }
 
 // Fetch data files from upstream
-func fetch(filename string, commit string) {
+func fetch(filename string, commit string) (err error) {
 	url := strings.ReplaceAll(dataUrl, "$REF", commit) + filename
-	fmt.Printf("Fetching %s from %s\n", filename, url)
+	dest := filepath.Join("..", filename)
+
+	fmt.Printf("Fetching %s to %s\n", filename, dest)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("HTTP error: %s (%s)", resp.Status, url)
+	}
+
+	output, err := os.Create(dest)
+	if err != nil {
+		return err
+	}
+	defer output.Close()
+
+	_, err = io.Copy(output, resp.Body)
+	if err != nil {
+		return err
+	}
+	return nil
 }
