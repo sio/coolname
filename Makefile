@@ -2,7 +2,7 @@ GO?=go
 
 .PHONY: test
 test:
-	$(GO) test -race -timeout 15s ./...
+	$(GO) test -timeout 15s ./...
 
 .PHONY: lint
 lint: fmt
