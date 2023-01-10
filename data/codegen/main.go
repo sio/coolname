@@ -4,12 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"path/filepath"
-	"io"
+	"strings"
 
 	"github.com/sio/coolname/data"
 )
