@@ -28,7 +28,7 @@ func main() {
 		log.Fatal(err)
 	}
 	if ref == data.UpstreamRef {
-		fmt.Printf("Up to date with upstream: branch %s at commit %s\n", target, ref)
+		fmt.Printf("Word lists up to date: upstream branch %s at commit %s\n", target, ref)
 		return
 	}
 	os.WriteFile("upstream.ref", []byte(ref), 0666)
