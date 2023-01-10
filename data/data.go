@@ -10,7 +10,7 @@
 
 package data
 
-var Words = map[string][]string{
+var Words = WordCollection{
 	"adjective": {
 		"acrid",
 		"ambrosial",
