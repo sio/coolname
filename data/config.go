@@ -1,15 +1,15 @@
 package data
 
 import (
+	_ "embed"
+	"encoding/json"
 	"fmt"
 )
-
 
 type WordBag interface {
 	Size() int
 	Get(position int) string
 }
-
 
 type WordCollection map[string]WordList
 
@@ -29,9 +29,9 @@ func (c *WordCollection) Get(category string, position int) (value string, err e
 	return (*c)[category][position], nil
 }
 
-
 // The most straightforward WordBag implementation
 type WordList []string
+
 func (wl *WordList) Size() int {
 	return len(*wl)
 }
@@ -42,19 +42,47 @@ func (wl *WordList) Get(position int) string {
 type Config map[string]ListRef
 
 type ListRef struct {
-	Comment string
-	Type refType
-	Refs []string
-	Unique bool
-	UniquePrefix bool
+	Comment      string   `json:"comment"`
+	Kind         RefType  `json:"type"`
+	Refs         []string `json:"lists"`
+	Unique       bool     `json:"ensure_unique"`
+	UniquePrefix int      `json:"ensure_unique_prefix"`
+	Value        string   `json:"value"`
+
+	/* The following config.json fields are supported by upstream    // TODO
+	   but are not implemented here:
+	        WORDS = 'words'
+	        PHRASES = 'phrases'
+	        NUMBER_OF_WORDS = 'number_of_words'
+	        GENERATOR = 'generator'
+	        MAX_LENGTH = 'max_length'
+	        MAX_SLUG_LENGTH = 'max_slug_length'
+	*/
 }
 
-type refType string
+type RefType string
 
 const (
-	Nested refType = "nested"
-	Cartesian = "cartesian"
-	Words = "words"
-	Phrases = "phrases"
-	Const = "const"
+	Nested    RefType = "nested"
+	Cartesian         = "cartesian"
+	List              = "words"
+	Phrases           = "phrases"
+	Const             = "const"
 )
+
+//go:embed config.json
+var rawDefaultConfig []byte
+
+func DefaultConfig() (c *Config) {
+	c = &Config{}
+	c.Parse(rawDefaultConfig)
+	return c
+}
+
+// Parse json configuration
+func (c *Config) Parse(input []byte) {
+	err := json.Unmarshal(input, c)
+	if err != nil {
+		panic(err)
+	}
+}
