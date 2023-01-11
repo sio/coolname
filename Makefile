@@ -1,5 +1,9 @@
 GO?=go
 
+.PHONY: todo
+todo:
+	@git grep TODO -- ':(exclude)Makefile'
+
 .PHONY: test
 test:
 	$(GO) test -timeout 15s ./...
