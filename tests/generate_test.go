@@ -63,3 +63,27 @@ func TestSlug(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkSlug(b *testing.B) {
+	var g coolname.Generator
+	var err error
+	for i := 0; i < b.N; i++ {
+		_, err = g.Slug()
+		if err != nil {
+			b.Error(err)
+		}
+	}
+}
+
+func BenchmarkSlugMulti(b *testing.B) {
+	var g coolname.Generator
+	var err error
+	for i := 0; i < b.N; i++ {
+		for j := 0; j < 100; j++ {
+			_, err = g.Slug()
+			if err != nil {
+				b.Error(err)
+			}
+		}
+	}
+}

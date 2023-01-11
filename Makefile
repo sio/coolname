@@ -4,6 +4,10 @@ GO?=go
 test:
 	$(GO) test -timeout 15s ./...
 
+.PHONY: bench
+bench:
+	$(GO) test -bench=. -count=3 -benchmem -benchtime=2s -run='^#' ./...
+
 .PHONY: lint
 lint: fmt
 	$(GO) vet ./...
