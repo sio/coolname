@@ -87,13 +87,11 @@ func (g *Generator) generate(dictionary string) (words []string, err error) {
 const slugSeparator = "-"
 
 func (g *Generator) Slug() (slug string, err error) {
-	words, err := g.Generate()
-	return strings.Join(words, slugSeparator), err
+	return g.SlugFrom("all")
 }
 
 func (g *Generator) SlugN(count int) (slug string, err error) {
-	words, err := g.GenerateN(count)
-	return strings.Join(words, slugSeparator), err
+	return g.SlugFrom(fmt.Sprintf("%d", count))
 }
 
 func (g *Generator) SlugFrom(dictionary string) (slug string, err error) {
