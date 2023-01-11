@@ -1,8 +1,9 @@
 GO?=go
+GIT?=git
 
 .PHONY: todo
 todo:
-	@git grep TODO -- ':(exclude)Makefile'
+	@$(GIT) grep TODO -- ':(exclude)Makefile'
 
 .PHONY: test
 test:
@@ -24,3 +25,15 @@ fmt:
 .PHONY: codegen
 codegen:
 	$(GO) generate ./...
+
+.PHONY: ci
+ci: versions codegen lint test bench
+
+.PHONY: reset-upstream-ref
+reset-upstream-ref:
+	echo > data/upstream.ref
+
+.PHONY: versions
+versions:
+	@$(GO) version
+	@$(GIT) --version
