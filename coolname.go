@@ -40,8 +40,29 @@ func (g *Generator) GenerateN(count int) (words []string, err error) {
 	return g.GenerateFrom(fmt.Sprintf("%d", count))
 }
 
+const timeout = time.Second
+
 func (g *Generator) GenerateFrom(dictionary string) (words []string, err error) {
-	// TODO: implement generator timeout (panic?)
+	res := make(chan result)
+	go func() {
+		var r result
+		r.words, r.err = g.generate(dictionary)
+		res <- r
+	}()
+	select {
+	case r := <-res:
+		return r.words, r.err
+	case <-time.After(timeout):
+		return words, fmt.Errorf("generator timed out")
+	}
+}
+
+type result struct {
+	words []string
+	err   error
+}
+
+func (g *Generator) generate(dictionary string) (words []string, err error) {
 	// TODO: check for repeated words in output
 	// TODO: break phrases into words
 	g.init()
