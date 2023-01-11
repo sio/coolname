@@ -7,6 +7,7 @@ test:
 .PHONY: lint
 lint: fmt
 	$(GO) vet ./...
+	git diff --exit-code --name-only
 
 .PHONY: fmt
 fmt:
