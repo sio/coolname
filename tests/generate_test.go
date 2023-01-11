@@ -10,7 +10,10 @@ import (
 
 func TestGenerate(t *testing.T) {
 	var g coolname.Generator
-	words := g.Generate()
+	words, err := g.Generate()
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(words) < 4 {
 		t.Errorf("output too short: %v", words)
 	}
@@ -30,7 +33,10 @@ func TestGenerate(t *testing.T) {
 func TestMultiple(t *testing.T) {
 	var g coolname.Generator
 	for i := 0; i < 10; i++ {
-		words := g.Generate()
+		words, err := g.Generate()
+		if err != nil {
+			t.Fatal(err)
+		}
 		fmt.Println(words)
 	}
 }

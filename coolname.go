@@ -12,74 +12,77 @@ import (
 )
 
 type Generator struct {
-	// Which dictionary to select words from
-	dictionary data.WordBag
-
-	// Total number of possible outputs
-	size int
+	// Which dictionary to use by default
+	dictionary string
 
 	// Random number generator, default: rand.Intn (not cryptographically secure)
 	random func(max int) int
 
 	// A collection of word bags to draw from
-	bags map[string]data.WordBag
+	bags  map[string]data.WordBag
+	sizes map[string]int
 }
 
 // Return a slice of random words (default length is 4)
-func (g *Generator) Generate() []string {
-	return g.GenerateN(4)
+func (g *Generator) Generate() (words []string, err error) {
+	return g.GenerateFrom("all")
 }
 
 // Return a slice of N random words
 //
 // Prepositions and articles (of, from, the) are not counted as words,
 // so the resulting slice may contain more elements than `count`
-func (g *Generator) GenerateN(count int) []string {
+//
+// Currently only dictionaries for 2, 3 and 4 words are defined upstream
+// (see config.json)
+func (g *Generator) GenerateN(count int) (words []string, err error) {
+	return g.GenerateFrom(fmt.Sprintf("%d", count))
+}
+
+func (g *Generator) GenerateFrom(dictionary string) (words []string, err error) {
 	// TODO: implement generator timeout (panic?)
-	// TODO: check for max count value (reset to max supported? panic?)
 	// TODO: check for repeated words in output
 	g.init()
 
-	return g.dictionary.Get(g.random(g.size))
+	var dict data.WordBag
+	var ok bool
+	dict, ok = g.bags[dictionary]
+	if !ok {
+		return words, fmt.Errorf("dictionary does not exist: %s", dictionary)
+	}
+
+	var size int
+	size, ok = g.sizes[dictionary]
+	if !ok {
+		size = dict.Size()
+		g.sizes[dictionary] = size
+	}
+
+	return dict.Get(g.random(size)), nil
 }
 
 // Provide default values for uninitialized fields
 func (g *Generator) init() {
-	var err error
 	if g.random == nil {
 		rand.Seed(time.Now().UnixNano())
 		g.random = rand.Intn
 	}
 	if g.bags == nil {
+		var err error
 		err = g.Configure(data.DefaultConfig(), &data.Words)
 		if err != nil {
 			panic(err) // default configuration must apply without errors
 		}
 	}
-	if g.dictionary == nil {
-		err = g.Dictionary("all")
-		if err != nil {
-			panic(err)
-		}
+	if g.dictionary == "" {
+		g.dictionary = "all"
 	}
-}
-
-// Select dictionary
-func (g *Generator) Dictionary(name string) error {
-	var dict data.WordBag
-	var ok bool
-	dict, ok = g.bags[name]
-	if !ok {
-		return fmt.Errorf("unknown dictionary: %s", name)
-	}
-	g.dictionary = dict
-	g.size = dict.Size()
-	return nil
 }
 
 // Load configuration
 func (g *Generator) Configure(conf *data.Config, words *data.WordCollection) (err error) {
 	g.bags = make(map[string]data.WordBag)
+	g.sizes = make(map[string]int)
 
 	var category string
 	for category = range *words {
