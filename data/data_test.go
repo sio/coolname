@@ -9,10 +9,12 @@ func TestWords(t *testing.T) {
 		if !Words.Contains(category) {
 			t.Errorf("category not found in dataset: %s", category)
 		}
-		if len(Words[category]) == 0 {
+		var bag WordBag
+		bag = Words.Bag(category)
+		if bag.Size() == 0 {
 			t.Errorf("empty category: %s", category)
 		}
-		for i := 0; i < len(Words[category]); i++ {
+		for i := 0; i < bag.Size(); i++ {
 			word, err := Words.Get(category, i)
 			if len(word) == 0 {
 				t.Errorf("empty word in category %s at position %d", category, i)

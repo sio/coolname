@@ -4,6 +4,7 @@ import (
 	"github.com/sio/coolname"
 	"testing"
 
+	"fmt"
 	"strings"
 )
 
@@ -23,5 +24,13 @@ func TestGenerate(t *testing.T) {
 		if strings.Contains(words[i], "=") {
 			t.Errorf("word %d contains an equal sign: %q", i, words[i])
 		}
+	}
+}
+
+func TestMultiple(t *testing.T) {
+	var g coolname.Generator
+	for i := 0; i < 10; i++ {
+		words := g.Generate()
+		fmt.Println(words)
 	}
 }
