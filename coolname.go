@@ -6,6 +6,7 @@ package coolname
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/sio/coolname/data"
@@ -42,6 +43,7 @@ func (g *Generator) GenerateN(count int) (words []string, err error) {
 func (g *Generator) GenerateFrom(dictionary string) (words []string, err error) {
 	// TODO: implement generator timeout (panic?)
 	// TODO: check for repeated words in output
+	// TODO: break phrases into words
 	g.init()
 
 	var dict data.WordBag
@@ -59,6 +61,23 @@ func (g *Generator) GenerateFrom(dictionary string) (words []string, err error) 
 	}
 
 	return dict.Get(g.random(size)), nil
+}
+
+const slugSeparator = "-"
+
+func (g *Generator) Slug() (slug string, err error) {
+	words, err := g.Generate()
+	return strings.Join(words, slugSeparator), err
+}
+
+func (g *Generator) SlugN(count int) (slug string, err error) {
+	words, err := g.GenerateN(count)
+	return strings.Join(words, slugSeparator), err
+}
+
+func (g *Generator) SlugFrom(dictionary string) (slug string, err error) {
+	words, err := g.GenerateFrom(dictionary)
+	return strings.Join(words, slugSeparator), err
 }
 
 // Provide default values for uninitialized fields

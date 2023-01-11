@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -30,13 +31,35 @@ func TestGenerate(t *testing.T) {
 	}
 }
 
-func TestMultiple(t *testing.T) {
+func TestShowOutput(t *testing.T) {
 	var g coolname.Generator
 	for i := 0; i < 10; i++ {
-		words, err := g.Generate()
+		slug, err := g.Slug()
 		if err != nil {
 			t.Fatal(err)
 		}
-		fmt.Println(words)
+		fmt.Println(slug)
+	}
+}
+
+func TestSlug(t *testing.T) {
+	var g coolname.Generator
+	valid := regexp.MustCompile(`[a-z-]+`)
+	for i := 0; i < 100; i++ {
+		slug, err := g.Slug()
+		if err != nil {
+			t.Errorf("could not generate slug: %v", err)
+			continue
+		}
+		if len(slug) == 0 {
+			t.Errorf("empty slug: %q", slug)
+			continue
+		}
+		if strings.Contains(slug, " ") {
+			t.Errorf("slug contains whitespace: %q", slug)
+		}
+		if !valid.MatchString(slug) {
+			t.Errorf("does not match regex %v: %q", valid, slug)
+		}
 	}
 }
