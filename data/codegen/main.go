@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/sio/coolname/data"
 )
@@ -33,6 +34,10 @@ func main() {
 	}
 	os.WriteFile("upstream.ref", []byte(ref), 0666)
 
+	errors := make(chan error)
+	done := make(chan bool)
+	var wg sync.WaitGroup
+
 	var file string
 	for i := -1; i < len(data.UpstreamLists); i++ {
 		if i < 0 {
@@ -40,11 +45,26 @@ func main() {
 		} else {
 			file = data.UpstreamLists[i] + ".txt"
 		}
-		err = fetch(file, ref)
-		if err != nil {
-			log.Fatal(err)
-		}
+		wg.Add(1)
+		go func(file string) {
+			defer wg.Done()
+			var err error
+			err = fetch(file, ref)
+			if err != nil {
+				errors <- err
+			}
+		}(file)
 	}
+	go func() {
+		wg.Wait()
+		done <- true
+	}()
+	select {
+	case err = <-errors:
+		log.Fatal(err)
+	case <-done:
+	}
+
 	err = convert()
 	if err != nil {
 		log.Fatal(err)
