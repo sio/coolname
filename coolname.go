@@ -75,7 +75,6 @@ type result struct {
 }
 
 func (g *Generator) generate(dictionary string) (words []string, err error) {
-	// TODO: check for repeated words in output
 	g.init()
 
 	var dict data.WordBag
@@ -93,6 +92,16 @@ func (g *Generator) generate(dictionary string) (words []string, err error) {
 	}
 
 	words = dict.Get(g.random(size))
+
+	// check for repeated words in output
+	unique := make(map[string]struct{})
+	for _, word := range words {
+		_, exists := unique[word]
+		if exists {
+			return g.generate(dictionary) // try again
+		}
+		unique[word] = struct{}{}
+	}
 
 	// break phrases into words
 	for {
