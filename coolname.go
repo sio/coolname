@@ -12,6 +12,15 @@ import (
 	"github.com/sio/coolname/data"
 )
 
+// coolname generator
+//
+// Zero value is perfectly usable (will load default configuration)
+//
+// Tunable knobs:
+//   - Upon instanciation user may choose the default dictionary and random
+//     generator by specifying field values
+//   - After instanciation user may provide a custom configuration and word
+//     list via Configure() method
 type Generator struct {
 	// Which dictionary to use by default
 	dictionary string
@@ -24,7 +33,7 @@ type Generator struct {
 	sizes map[string]int
 }
 
-// Return a slice of random words (default length is 4)
+// Return a slice of random words (most likely will result in length of 4)
 func (g *Generator) Generate() (words []string, err error) {
 	return g.GenerateFrom("all")
 }
@@ -42,6 +51,9 @@ func (g *Generator) GenerateN(count int) (words []string, err error) {
 
 const timeout = time.Second
 
+// Return a random word combination from dictionary specified by name
+//
+// Valid dictionary names are top level keys from config.json
 func (g *Generator) GenerateFrom(dictionary string) (words []string, err error) {
 	res := make(chan result)
 	go func() {
@@ -86,14 +98,18 @@ func (g *Generator) generate(dictionary string) (words []string, err error) {
 
 const slugSeparator = "-"
 
+// Generate URL safe slug
 func (g *Generator) Slug() (slug string, err error) {
 	return g.SlugFrom("all")
 }
 
+// Generate URL safe slug with specified amount of meaningful words
+// (see GenerateN)
 func (g *Generator) SlugN(count int) (slug string, err error) {
 	return g.SlugFrom(fmt.Sprintf("%d", count))
 }
 
+// Generate URL safe slug from a given dictionary (see GenerateFrom)
 func (g *Generator) SlugFrom(dictionary string) (slug string, err error) {
 	words, err := g.GenerateFrom(dictionary)
 	return strings.Join(words, slugSeparator), err
