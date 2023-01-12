@@ -8,12 +8,9 @@ import (
 type Config map[string]ListRef
 
 type ListRef struct {
-	Comment      string   `json:"comment"`
-	Kind         RefType  `json:"type"`
-	Refs         []string `json:"lists"`
-	Unique       bool     `json:"ensure_unique"`
-	UniquePrefix int      `json:"ensure_unique_prefix"`
-	Value        string   `json:"value"`
+	Kind  RefType  `json:"type"`
+	Refs  []string `json:"lists"`
+	Value string   `json:"value"`
 
 	/* The following config.json fields are supported by upstream    // TODO
 	   but are not implemented here:
@@ -23,6 +20,12 @@ type ListRef struct {
 	        GENERATOR = 'generator'
 	        MAX_LENGTH = 'max_length'
 	        MAX_SLUG_LENGTH = 'max_slug_length'
+
+		These fields were briefly supported but were removed
+		because we make no use of them
+			Comment      string   `json:"comment"`
+			Unique       bool     `json:"ensure_unique"`
+			UniquePrefix int      `json:"ensure_unique_prefix"`
 	*/
 }
 

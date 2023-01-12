@@ -30,8 +30,8 @@ func TestListRefParsing(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to parse a ListRef: %v", err)
 	}
-	if ref.Comment != "Entry point" {
-		t.Errorf("invalid comment: %v", ref)
+	if ref.Kind != Nested {
+		t.Errorf("invalid reference type: %v", ref)
 	}
 	if len(ref.Refs) != 3 {
 		t.Errorf("invalid refs: %v", ref)
