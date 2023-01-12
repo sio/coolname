@@ -7,7 +7,11 @@ todo:
 
 .PHONY: test
 test:
-	$(GO) test -timeout 15s ./...
+	$(GO) test -timeout=15s $(GOTEST_ARGS) ./...
+
+.PHONY: test-multi
+test-multi: GOTEST_ARGS+=-count=5000
+test-multi: test
 
 .PHONY: bench
 bench:
@@ -28,6 +32,8 @@ codegen:
 
 .PHONY: ci
 ci: versions codegen lint test bench
+ci:
+	$(MAKE) test-multi
 
 .PHONY: reset-upstream-ref
 reset-upstream-ref:
