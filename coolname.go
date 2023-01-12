@@ -76,7 +76,6 @@ type result struct {
 
 func (g *Generator) generate(dictionary string) (words []string, err error) {
 	// TODO: check for repeated words in output
-	// TODO: break phrases into words
 	g.init()
 
 	var dict data.WordBag
@@ -93,7 +92,25 @@ func (g *Generator) generate(dictionary string) (words []string, err error) {
 		g.sizes[dictionary] = size
 	}
 
-	return dict.Get(g.random(size)), nil
+	words = dict.Get(g.random(size))
+
+	// break phrases into words
+	for {
+		var i int
+		var word string
+		for i, word = range words {
+			if !strings.Contains(word, " ") {
+				continue
+			}
+			words = concat(words[:i], strings.Fields(word), words[i+1:])
+			break
+		}
+		if i == len(words)-1 {
+			break
+		}
+	}
+
+	return words, nil
 }
 
 const slugSeparator = "-"
@@ -210,4 +227,20 @@ func (g *Generator) bagsByName(names []string) (result []data.WordBag, ok bool) 
 		result[i] = g.bags[names[i]]
 	}
 	return result, true
+}
+
+// Slice concatenation
+// https://stackoverflow.com/a/40678026
+func concat[T any](slices ...[]T) []T {
+	var total int
+	var slice, result []T
+	for _, slice = range slices {
+		total += len(slice)
+	}
+	result = make([]T, total)
+	var i int
+	for _, slice = range slices {
+		i += copy(result[i:], slice)
+	}
+	return result
 }
