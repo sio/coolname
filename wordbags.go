@@ -25,7 +25,7 @@ func (bag constWordBag) Get(position int) []string {
 }
 
 // Concatenation of word bags
-type nestedWordBag []data.WordBag
+type nestedWordBag []data.WordBag // TODO: add tests
 
 func (bag *nestedWordBag) Size() int {
 	var size int
@@ -46,7 +46,7 @@ func (bag *nestedWordBag) Get(position int) []string {
 }
 
 // Cartesian product
-type cartesianWordBag []data.WordBag
+type cartesianWordBag []data.WordBag // TODO: add tests
 
 func (bag *cartesianWordBag) Size() int {
 	var size int
