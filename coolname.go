@@ -75,7 +75,6 @@ type result struct {
 }
 
 func (g *Generator) generate(dictionary string) (words []string, err error) {
-	// TODO: check for repeated words in output
 	g.init()
 
 	var dict data.WordBag
@@ -94,7 +93,23 @@ func (g *Generator) generate(dictionary string) (words []string, err error) {
 
 	words = dict.Get(g.random(size))
 
-	// break phrases into words
+	// Check for repeated words in output
+	//
+	// Even though map[string]struct{} is a more clean and recommended approach,
+	// the following bruteforce checker actually works a little bit faster (~0.1us)
+	// because len(words) is generally a very small number.
+	//
+	// Initial algorithm is saved in git tag `experiment/unique-map`,
+	// run `make bench` to check for yourself.
+	for i := 0; i < len(words); i++ {
+		for j := 0; j < len(words); j++ {
+			if i != j && words[i] == words[j] {
+				return g.generate(dictionary) // try again
+			}
+		}
+	}
+
+	// Break phrases into words
 	for {
 		var i int
 		var word string
