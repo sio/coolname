@@ -3,7 +3,7 @@ GIT?=git
 
 .PHONY: todo
 todo:
-	@$(GIT) grep TODO -- ':(exclude)Makefile'
+	@$(GIT) grep $(addsuffix DO,TO) # avoid self-reference in grep
 
 .PHONY: test
 test:
