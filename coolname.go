@@ -12,6 +12,16 @@ import (
 	"github.com/sio/coolname/data"
 )
 
+var (
+	defaultGenerator Generator
+	Generate         = defaultGenerator.Generate
+	GenerateN        = defaultGenerator.GenerateN
+	GenerateFrom     = defaultGenerator.GenerateFrom
+	Slug             = defaultGenerator.Slug
+	SlugN            = defaultGenerator.SlugN
+	SlugFrom         = defaultGenerator.SlugFrom
+)
+
 // coolname generator
 //
 // Zero value is perfectly usable (will load default configuration)

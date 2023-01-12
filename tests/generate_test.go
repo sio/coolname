@@ -15,6 +15,7 @@ func TestGenerate(t *testing.T) {
 		Func   func() ([]string, error)
 		MinLen int
 	}{
+		{Func: coolname.Generate, MinLen: 2},
 		{Func: g.Generate, MinLen: 2},
 		{Func: func() ([]string, error) { return g.GenerateN(2) }, MinLen: 2},
 		{Func: func() ([]string, error) { return g.GenerateN(3) }, MinLen: 3},
