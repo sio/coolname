@@ -11,22 +11,34 @@ import (
 
 func TestGenerate(t *testing.T) {
 	var g coolname.Generator
-	words, err := g.Generate()
-	if err != nil {
-		t.Fatal(err)
+	tests := []struct {
+		Func   func() ([]string, error)
+		MinLen int
+	}{
+		{Func: g.Generate, MinLen: 2},
+		{Func: func() ([]string, error) { return g.GenerateN(2) }, MinLen: 2},
+		{Func: func() ([]string, error) { return g.GenerateN(3) }, MinLen: 3},
+		{Func: func() ([]string, error) { return g.GenerateN(4) }, MinLen: 4},
 	}
-	if len(words) < 4 {
-		t.Errorf("output too short: %v", words)
-	}
-	for i := 0; i < len(words); i++ {
-		if len(words[i]) == 0 {
-			t.Errorf("word %d is empty: %v", i, words)
+	for index, test := range tests {
+		prefix := fmt.Sprintf("[%d]", index)
+		words, err := test.Func()
+		if err != nil {
+			t.Fatalf("%s %v", prefix, err)
 		}
-		if strings.Contains(words[i], " ") {
-			t.Errorf("word %d contains a space: %q", i, words[i])
+		if len(words) < test.MinLen {
+			t.Errorf("%s output shorter than %d elements: %v", prefix, test.MinLen, words)
 		}
-		if strings.Contains(words[i], "=") {
-			t.Errorf("word %d contains an equal sign: %q", i, words[i])
+		for i := 0; i < len(words); i++ {
+			if len(words[i]) == 0 {
+				t.Errorf("%s word %d is empty: %v", prefix, i, words)
+			}
+			if strings.Contains(words[i], " ") {
+				t.Errorf("%s word %d contains a space: %q", prefix, i, words[i])
+			}
+			if strings.Contains(words[i], "=") {
+				t.Errorf("%s word %d contains an equal sign: %q", prefix, i, words[i])
+			}
 		}
 	}
 }
