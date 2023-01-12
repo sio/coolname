@@ -31,7 +31,7 @@ ci: versions codegen lint test bench
 
 .PHONY: reset-upstream-ref
 reset-upstream-ref:
-	echo > data/upstream.ref
+	echo > data/codegen/upstream.ref
 
 .PHONY: versions
 versions:

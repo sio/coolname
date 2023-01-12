@@ -6,15 +6,13 @@ import (
 	"os"
 	"strings"
 	"text/template"
-
-	"github.com/sio/coolname/data"
 )
 
 // Convert upstream data files to Golang source code
 func convert() (err error) {
-	pack := make(datapack, len(data.UpstreamLists))
-	for i := 0; i < len(data.UpstreamLists); i++ {
-		pack[i], err = load(data.UpstreamLists[i])
+	pack := make(datapack, len(upstreamLists))
+	for i := 0; i < len(upstreamLists); i++ {
+		pack[i], err = load(upstreamLists[i])
 		if err != nil {
 			return err
 		}
@@ -39,7 +37,7 @@ func convert() (err error) {
 	fmt.Printf("Word lists successfully written to %s\n", output.Name())
 
 	fmt.Println("Removing intermediate *.txt files")
-	for _, name := range data.UpstreamLists {
+	for _, name := range upstreamLists {
 		err = os.Remove(name + ".txt")
 		if err != nil {
 			return err

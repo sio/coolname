@@ -1,14 +1,12 @@
-//go:generate go run ./codegen
-
-package data
+package main
 
 import (
 	_ "embed"
 )
 
-const UpstreamConfig = "config.json"
+const upstreamConfig = "config.json"
 
-var UpstreamLists = [...]string{
+var upstreamLists = [...]string{
 	"adjective",
 	"adjective_first",
 	"adjective_near",
@@ -27,4 +25,4 @@ var UpstreamLists = [...]string{
 }
 
 //go:embed upstream.ref
-var UpstreamRef string
+var upstreamRef string

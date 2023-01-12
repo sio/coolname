@@ -10,8 +10,6 @@ import (
 	"os"
 	"strings"
 	"sync"
-
-	"github.com/sio/coolname/data"
 )
 
 const (
@@ -28,22 +26,22 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if ref == data.UpstreamRef {
+	if ref == upstreamRef {
 		fmt.Printf("Word lists up to date: upstream branch %s at commit %s\n", target, ref)
 		return
 	}
-	os.WriteFile("upstream.ref", []byte(ref), 0666)
+	os.WriteFile("codegen/upstream.ref", []byte(ref), 0666)
 
 	errors := make(chan error)
 	done := make(chan bool)
 	var wg sync.WaitGroup
 
 	var file string
-	for i := -1; i < len(data.UpstreamLists); i++ {
+	for i := -1; i < len(upstreamLists); i++ {
 		if i < 0 {
-			file = data.UpstreamConfig
+			file = upstreamConfig
 		} else {
-			file = data.UpstreamLists[i] + ".txt"
+			file = upstreamLists[i] + ".txt"
 		}
 		wg.Add(1)
 		go func(file string) {
