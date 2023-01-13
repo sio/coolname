@@ -11,6 +11,11 @@ todo:
 test:
 	$(GO) test -timeout=15s $(GOTEST_ARGS) ./...
 
+.PHONY: test-verbose
+test-verbose: GOTEST_ARGS+=-v
+test-verbose:
+	@$(MAKE) test
+
 .PHONY: test-multi
 test-multi: GOTEST_ARGS+=-count=5000
 test-multi: GOTEST_ARGS+=-short
