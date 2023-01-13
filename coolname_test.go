@@ -26,3 +26,58 @@ func TestEntropy(t *testing.T) {
 		}
 	}
 }
+
+func TestUniqueness(t *testing.T) {
+	// It's only feasible to test uniqueness for the smallest dictionary
+	// ("2" has 320k permutations)
+	const dict = "2"
+
+	// Some adjectives occur in multiple lists, like "remarkable" in
+	// "of_modifier" and "adjective".
+	// Helpful command to find all other such words:
+	//    sort data/data.go | uniq -c | grep -vP '^\s*1\s'
+	const threshold = 0.99
+
+	if testing.Short() {
+		t.Skip("skipping test in short mode")
+	}
+
+	var seq incrementer
+	g := Generator{random: seq.FakeRandInt}
+	g.init()
+	size := g.bags[dict].Size()
+	if size == 0 {
+		t.Fatalf("empty dictionary: %q", dict)
+	}
+	unique := make(map[string]struct{})
+	for seq.Value() < size {
+		slug, err := g.SlugFrom(dict)
+		if err != nil {
+			t.Fatalf("generator failure on iteration %d/%d: %v", seq.Value(), size, err)
+		}
+		_, exists := unique[slug]
+		if exists {
+			t.Logf("slug repeated %q, iteration %d/%d", slug, seq.Value(), size)
+		}
+		unique[slug] = struct{}{}
+	}
+	t.Logf("unique entries: %d/%d", len(unique), size)
+	ratio := float32(len(unique)) / float32(size)
+	if ratio < threshold {
+		t.Errorf("uniqueness ratio lower than threshold: %.2f < %.2f", ratio, threshold)
+	}
+}
+
+type incrementer int
+
+func (i *incrementer) FakeRandInt(max int) int {
+	return i.Next()
+}
+func (i *incrementer) Next() int {
+	result := i.Value()
+	*i++
+	return result
+}
+func (i *incrementer) Value() int {
+	return int(*i)
+}
