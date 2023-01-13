@@ -1,6 +1,8 @@
 GO?=go
 GIT?=git
 
+export GOTEST_ARGS
+
 .PHONY: todo
 todo:
 	@$(GIT) grep $(addsuffix DO,TO) # avoid self-reference in grep
@@ -11,7 +13,8 @@ test:
 
 .PHONY: test-multi
 test-multi: GOTEST_ARGS+=-count=5000
-test-multi: test
+test-multi:
+	@$(MAKE) test
 
 .PHONY: bench
 bench:
@@ -31,9 +34,7 @@ codegen:
 	$(GO) generate ./...
 
 .PHONY: ci
-ci: versions codegen lint test bench
-ci:
-	$(MAKE) test-multi
+ci: versions codegen lint test bench test-multi
 
 .PHONY: reset-upstream-ref
 reset-upstream-ref:
