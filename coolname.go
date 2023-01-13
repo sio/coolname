@@ -45,7 +45,7 @@ type Generator struct {
 
 // Return a slice of random words (most likely will result in length of 4)
 func (g *Generator) Generate() (words []string, err error) {
-	return g.GenerateFrom("all")
+	return g.GenerateFrom(g.dictionary)
 }
 
 // Return a slice of N random words
@@ -142,7 +142,7 @@ const slugSeparator = "-"
 
 // Generate URL safe slug
 func (g *Generator) Slug() (slug string, err error) {
-	return g.SlugFrom("all")
+	return g.SlugFrom(g.dictionary)
 }
 
 // Generate URL safe slug with specified amount of meaningful words
