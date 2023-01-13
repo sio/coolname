@@ -45,6 +45,9 @@ func TestGenerate(t *testing.T) {
 }
 
 func TestShowOutput(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode (useful only for interactive runs)")
+	}
 	var g coolname.Generator
 	for i := 0; i < 10; i++ {
 		slug, err := g.Slug()
