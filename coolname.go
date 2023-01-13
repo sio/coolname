@@ -237,6 +237,16 @@ func (g *Generator) Configure(conf *data.Config, words *data.WordCollection) (er
 	return nil
 }
 
+// Replace random number generator (default is rand.Intn)
+func (g *Generator) ReplaceRandom(r func(max int) int) {
+	g.random = r
+}
+
+// Replace dictionary to use by default
+func (g *Generator) ReplaceDefaultDict(name string) {
+	g.dictionary = name
+}
+
 // Return a slice of WordBags for provided names
 func (g *Generator) bagsByName(names []string) (result []data.WordBag, ok bool) {
 	var name string
