@@ -7,3 +7,5 @@ All hard work of creating and maintaing word lists happens upstream.
 [Alexander Lukanin]: https://github.com/alexanderlukanin13
 
 - [Package documentation at Go.dev](https://pkg.go.dev/github.com/sio/coolname)
+
+<!-- TODO: write full README -->

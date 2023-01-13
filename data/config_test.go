@@ -37,3 +37,5 @@ func TestListRefParsing(t *testing.T) {
 		t.Errorf("invalid refs: %v", ref)
 	}
 }
+
+// TODO: test loading Config from a small custom JSON input (valid and invalid)

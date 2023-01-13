@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+// TODO: use deterministic RandInt with a small custom WordCollection & Config to verify Generator
+
 func TestGenerate(t *testing.T) {
 	var g coolname.Generator
 	tests := []struct {
