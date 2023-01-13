@@ -50,6 +50,8 @@ func TestUniqueness(t *testing.T) {
 		t.Fatalf("empty dictionary: %q", dict)
 	}
 	unique := make(map[string]struct{})
+	var repeats int
+	const repeatsShow = 10
 	for seq.Value() < size {
 		slug, err := g.SlugFrom(dict)
 		if err != nil {
@@ -57,7 +59,13 @@ func TestUniqueness(t *testing.T) {
 		}
 		_, exists := unique[slug]
 		if exists {
-			t.Logf("slug repeated %q, iteration %d/%d", slug, seq.Value(), size)
+			if repeats < repeatsShow {
+				t.Logf("slug repeated %q, iteration %d/%d", slug, seq.Value(), size)
+			}
+			if repeats == repeatsShow {
+				t.Logf("further repeated entries are omitted from output")
+			}
+			repeats++
 		}
 		unique[slug] = struct{}{}
 	}
