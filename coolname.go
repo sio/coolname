@@ -86,12 +86,15 @@ type result struct {
 
 func (g *Generator) generate(dictionary string) (words []string, err error) {
 	g.init()
+	if dictionary == "" { // if generate() was called before initialization dict name could become stale
+		dictionary = g.dictionary
+	}
 
 	var dict data.WordBag
 	var ok bool
 	dict, ok = g.bags[dictionary]
 	if !ok {
-		return words, fmt.Errorf("dictionary does not exist: %s", dictionary)
+		return words, fmt.Errorf("dictionary does not exist: %q", dictionary)
 	}
 
 	var size int
