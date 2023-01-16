@@ -27,10 +27,10 @@ var (
 // Zero value is perfectly usable (will load default configuration)
 //
 // Tunable knobs:
-//   - Upon instanciation user may choose the default dictionary and random
-//     generator by specifying field values
-//   - After instanciation user may provide a custom configuration and word
+//   - After instanciation user may provide custom configuration and word
 //     list via Configure() method
+//   - User may also override the default dictionary name (ReplaceDefaultDict)
+//     and random number generator (ReplaceRandom)
 type Generator struct {
 	// Which dictionary to use by default
 	dictionary string
@@ -178,7 +178,8 @@ func (g *Generator) init() {
 	}
 }
 
-// Load configuration
+// Load configuration.
+// Calling this method is not required if default word collection is OK for you
 func (g *Generator) Configure(conf *data.Config, words *data.WordCollection) (err error) {
 	g.bags = make(map[string]data.WordBag)
 	g.sizes = make(map[string]int)
@@ -240,12 +241,19 @@ func (g *Generator) Configure(conf *data.Config, words *data.WordCollection) (er
 	return nil
 }
 
-// Replace random number generator (default is rand.Intn)
+// Provide a custom random number generator
+//
+// The function `r` must return integer values from a half-open interval [0, max)
+// for any non-negative `max` value
+//
+// Default: math/rand::IntN()
 func (g *Generator) ReplaceRandom(r func(max int) int) {
 	g.random = r
 }
 
-// Replace dictionary to use by default
+// Set dictionary name to be used by Slug() and Generate()
+//
+// Default: "all"
 func (g *Generator) ReplaceDefaultDict(name string) {
 	g.dictionary = name
 }
