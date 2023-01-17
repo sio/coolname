@@ -50,13 +50,21 @@ func TestShowOutput(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode (useful only for interactive runs)")
 	}
+	dicts := []string{
+		"all",
+		"4",
+		"3",
+		"2",
+	}
 	var g coolname.Generator
-	for i := 0; i < 10; i++ {
-		slug, err := g.Slug()
-		if err != nil {
-			t.Fatal(err)
+	for _, dict := range dicts {
+		for i := 0; i < 3; i++ {
+			slug, err := g.SlugFrom(dict)
+			if err != nil {
+				t.Fatal(err)
+			}
+			fmt.Printf("%8s: %s\n", dict, slug)
 		}
-		fmt.Println(slug)
 	}
 }
 
