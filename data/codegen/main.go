@@ -33,7 +33,6 @@ func main() {
 	os.WriteFile("codegen/upstream.ref", []byte(ref), 0666)
 
 	errors := make(chan error)
-	done := make(chan bool)
 	var wg sync.WaitGroup
 
 	var file string
@@ -55,12 +54,11 @@ func main() {
 	}
 	go func() {
 		wg.Wait()
-		done <- true
+		errors <- nil
 	}()
-	select {
-	case err = <-errors:
+	err = <-errors
+	if err != nil {
 		log.Fatal(err)
-	case <-done:
 	}
 
 	err = convert()
