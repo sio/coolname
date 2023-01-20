@@ -35,22 +35,22 @@ func main() {
 	errors := make(chan error)
 	var wg sync.WaitGroup
 
-	var file string
 	for i := -1; i < len(upstreamLists); i++ {
+		var file string
 		if i < 0 {
 			file = upstreamConfig
 		} else {
 			file = upstreamLists[i] + ".txt"
 		}
 		wg.Add(1)
-		go func(file string) {
+		go func() {
 			defer wg.Done()
 			var err error
 			err = fetch(file, ref)
 			if err != nil {
 				errors <- err
 			}
-		}(file)
+		}()
 	}
 	go func() {
 		wg.Wait()
