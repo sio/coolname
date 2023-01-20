@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 )
 
 const (
@@ -69,7 +70,10 @@ func main() {
 
 // Resolve upstream branch/tag name to a commit hash
 func commit(head string) (hash string, err error) {
-	resp, err := http.Get(refsUrl)
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+	resp, err := client.Get(refsUrl)
 	if err != nil {
 		return hash, err
 	}
