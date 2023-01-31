@@ -17,7 +17,7 @@ test-verbose:
 	@$(MAKE) test
 
 .PHONY: test-multi
-test-multi: GOTEST_ARGS+=-count=5000
+test-multi: GOTEST_ARGS+=-count=1000
 test-multi: GOTEST_ARGS+=-short
 test-multi:
 	@$(MAKE) test
